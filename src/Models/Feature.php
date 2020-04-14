@@ -72,7 +72,8 @@ class Feature extends Model
             Config::get('plans.tables.plan_features'),
             'feature_id',
             'plan_id'
-        )->using(Config::get('plans.models.PlanFeature'));
+        )->using(Config::get('plans.models.PlanFeature'))
+        ->withTimestamps();
     }
 
     /**

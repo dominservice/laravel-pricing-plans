@@ -102,6 +102,7 @@ class Plan extends Model
             )
             ->using(Config::get('plans.models.PlanFeature'))
             ->withPivot(['value', 'note'])
+            ->withTimestamps()
             ->orderBy('sort_order');
     }
 

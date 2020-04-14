@@ -42,6 +42,18 @@ class PlanFeature extends Pivot
     ];
 
     /**
+     * Plan constructor.
+     *
+     * @param array $attributes
+     */
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+
+        $this->setTable(Config::get('plans.tables.plan_features'));
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function feature()

@@ -41,7 +41,7 @@ class CreatePlansTables extends Migration
             $table->timestamps();
         });
 
-        Schema::create($tables['plan_features'], function (Blueprint $table) {
+        Schema::create($tables['plan_features'], function (Blueprint $table) use ($tables) {
             $table->increments('id');
             $table->integer('plan_id')->unsigned();
             $table->integer('feature_id')->unsigned();
@@ -49,14 +49,14 @@ class CreatePlansTables extends Migration
             $table->text('note')->nullable();
             $table->timestamps();
 
-            $table->foreign('plan_id')->references('id')->on('plans')->onDelete('cascade');
-            $table->foreign('feature_id')->references('id')->on('features')->onDelete('cascade');
-            $table->unique(['plan_id', 'feature_id']);
+            $table->foreign('plan_id')->references('id')->on($tables['plans'])->onDelete('cascade');
+            $table->foreign('feature_id')->references('id')->on($tables['features'])->onDelete('cascade');
+            $table->unique(['plan_id', 'feature_id'], 'unique_plan_feat');
         });
 
-        Schema::create($tables['plan_subscriptions'], function (Blueprint $table) {
+        Schema::create($tables['plan_subscriptions'], function (Blueprint $table) use ($tables) {
             $table->increments('id');
-            $table->morphs('subscriber');
+            $table->morphs('subscriber', 'subscriber_type_id_index');
             $table->integer('plan_id')->unsigned();
             $table->string('name');
             $table->boolean('canceled_immediately')->nullable();
@@ -66,11 +66,11 @@ class CreatePlansTables extends Migration
             $table->timestamp('canceled_at')->nullable();
             $table->timestamps();
 
-            $table->foreign('plan_id')->references('id')->on('plans')->onDelete('cascade');
-            $table->index(['subscriber_type', 'subscriber_id', 'plan_id']);
+            $table->foreign('plan_id')->references('id')->on($tables['plans'])->onDelete('cascade');
+            $table->index(['subscriber_type', 'subscriber_id', 'plan_id'], 'index_sub_plan');
         });
 
-        Schema::create($tables['plan_subscription_usages'], function (Blueprint $table) {
+        Schema::create($tables['plan_subscription_usages'], function (Blueprint $table) use ($tables) {
             $table->increments('id');
             $table->integer('subscription_id')->unsigned();
             $table->string('feature_code');
@@ -78,9 +78,9 @@ class CreatePlansTables extends Migration
             $table->timestamp('valid_until')->nullable();
             $table->timestamps();
 
-            $table->foreign('subscription_id')->references('id')->on('plan_subscriptions')->onDelete('cascade');
-            $table->foreign('feature_code')->references('code')->on('features')->onDelete('cascade');
-            $table->unique(['subscription_id', 'feature_code']);
+            $table->foreign('subscription_id')->references('id')->on($tables['plan_subscriptions'])->onDelete('cascade');
+            $table->foreign('feature_code')->references('code')->on($tables['features'])->onDelete('cascade');
+            $table->unique(['subscription_id', 'feature_code'], 'unique_sub_feat');
         });
     }
 
