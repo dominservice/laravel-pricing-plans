@@ -3,6 +3,7 @@
 namespace Laravel\PricingPlans\Models;
 
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Support\Facades\Config;
 use Laravel\PricingPlans\Models\Concerns\BelongsToPlanModel;
 
 /**
