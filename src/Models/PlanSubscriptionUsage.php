@@ -50,7 +50,7 @@ class PlanSubscriptionUsage extends Model
     {
         parent::__construct($attributes);
 
-        $this->setTable(Config::get('plans.tables.plan_subsription_usages'));
+        $this->setTable(Config::get('plans.tables.plan_subscription_usages'));
     }
 
     /**
