@@ -394,7 +394,7 @@ class PlanSubscription extends Model
      * @param int $dayRange
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeFindEndingTrial($query, $dayRange = 3)
+    public function scopeEndingTrial($query, $dayRange = 3)
     {
         $from = Carbon::now();
         $to = Carbon::now()->addDays($dayRange)->endOfDay();
@@ -408,7 +408,7 @@ class PlanSubscription extends Model
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeFindEndedTrial($query)
+    public function scopeEndedTrial($query)
     {
         return $query->where('trial_ends_at', '<=', Carbon::now());
     }
@@ -420,7 +420,7 @@ class PlanSubscription extends Model
      * @param int $dayRange
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeFindEndingPeriod($query, $dayRange = 3)
+    public function scopeEndingPeriod($query, $dayRange = 3)
     {
         $from = Carbon::now();
         $to = Carbon::now()->addDays($dayRange)->endOfDay();
@@ -434,7 +434,7 @@ class PlanSubscription extends Model
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeFindEndedPeriod($query)
+    public function scopeEndedPeriod($query)
     {
         return $query->where('ends_at', '<=', Carbon::now());
     }
@@ -445,7 +445,7 @@ class PlanSubscription extends Model
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeFindCanceled($query)
+    public function scopeCanceled($query)
     {
         return $query->whereNotNull('canceled_at')->where('canceled_at', '<=', Carbon::now());
     }
@@ -456,7 +456,7 @@ class PlanSubscription extends Model
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeFindActive($query)
+    public function scopeActive($query)
     {
         return $query->whereNull('canceled_at');
     }
