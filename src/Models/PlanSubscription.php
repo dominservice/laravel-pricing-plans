@@ -396,7 +396,7 @@ class PlanSubscription extends Model
      */
     public function scopeFindEndingTrial($query, $dayRange = 3)
     {
-        $from = Carbon::now()->startOfDay();
+        $from = Carbon::now();
         $to = Carbon::now()->addDays($dayRange)->endOfDay();
 
         return $query->whereBetween('trial_ends_at', [$from, $to]);
@@ -422,7 +422,7 @@ class PlanSubscription extends Model
      */
     public function scopeFindEndingPeriod($query, $dayRange = 3)
     {
-        $from = Carbon::now()->startOfDay();
+        $from = Carbon::now();
         $to = Carbon::now()->addDays($dayRange)->endOfDay();
 
         return $query->whereBetween('ends_at', [$from, $to]);
