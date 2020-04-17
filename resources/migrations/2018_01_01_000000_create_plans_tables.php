@@ -90,14 +90,14 @@ class CreatePlansTables extends Migration
             $table->string('feature_code');
             $table->smallInteger('used')->unsigned()->default(0);
             $table->smallInteger('hired')->unsigned()->default(0);
-            $table->timestamp('starts_at');
-            $table->timestamp('ends_at');
+            $table->date('starts_at');
+            $table->date('ends_at');
             $table->timestamps();
 
             $table->foreign('plan_id')->references('id')->on($tables['plans'])->onDelete('cascade');
             $table->foreign('subscription_id')->references('id')->on($tables['plan_subscriptions'])->onDelete('cascade');
             $table->foreign('feature_code')->references('code')->on($tables['features'])->onDelete('cascade');
-            $table->unique(['subscription_id', 'feature_code', 'plan_id'], 'unique_sub_feat_plan_hist');
+            $table->unique(['subscription_id', 'feature_code', 'plan_id', 'starts_at'], 'unique_sub_feat_plan_hist');
         });
     }
 
