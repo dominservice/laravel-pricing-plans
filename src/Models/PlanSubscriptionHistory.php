@@ -53,7 +53,7 @@ class PlanSubscriptionHistory extends Model
     {
         parent::__construct($attributes);
 
-        $this->setTable(Config::get('plans.tables.plan_subscription_hisotry'));
+        $this->setTable(Config::get('plans.tables.plan_subscription_history'));
     }
 
     /**

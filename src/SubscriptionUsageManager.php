@@ -96,7 +96,7 @@ class SubscriptionUsageManager
                 'ends_at'      => Carbon::now(),
             ], [
                 'used' => $usage->used,
-                'hired' => $features->where('code', $usage->feature_code)->sum('value'),
+                'hired' => $features->where('code', $usage->feature_code)->first('value')->pivot->value,
             ]);
             $history->saveOrFail();
         }
