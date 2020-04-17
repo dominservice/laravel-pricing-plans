@@ -315,9 +315,6 @@ class PlanSubscription extends Model
 
             // Clear usage data
             $usageManager = new SubscriptionUsageManager($this);
-            if (Config::get('plans.save_history_usage', true)) {
-                $usageManager->saveHistory();
-            }
             $usageManager->clear();
         }
 
