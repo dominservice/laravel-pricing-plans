@@ -440,6 +440,28 @@ class PlanSubscription extends Model
     }
 
     /**
+     * Find ending subscriptions.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFindCanceled($query)
+    {
+        return $query->whereNotNull('canceled_at')->where('canceled_at', '<=', Carbon::now());
+    }
+
+    /**
+     * Find ending subscriptions.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFindActive($query)
+    {
+        return $query->whereNull('canceled_at');
+    }
+
+    /**
      * Set subscription period.
      *
      * @param string                    $intervalUnit
