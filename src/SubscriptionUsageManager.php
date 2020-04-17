@@ -88,15 +88,15 @@ class SubscriptionUsageManager
      */
     public function saveHistory()
     {
-        $features = $this->subscription->plan->features;
-        foreach ($this->subscription->usage as $usage) {
+        $usages = $this->subscription->usage;
+        foreach ($this->subscription->plan->features as $feature) {
             $history = $this->subscription->history()->firstOrNew([
-                'feature_code' => $usage->feature_code,
+                'feature_code' => $feature->code,
                 'starts_at'    => $this->subscription->starts_at,
                 'ends_at'      => Carbon::now(),
             ], [
-                'used' => $usage->used,
-                'hired' => $features->where('code', $usage->feature_code)->first('value')->pivot->value,
+                'used' => $usages->where('feature_code', $feature->code)->first()->used,
+                'hired' => $feature->pivot->value,
             ]);
             $history->saveOrFail();
         }

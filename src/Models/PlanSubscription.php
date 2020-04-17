@@ -342,7 +342,9 @@ class PlanSubscription extends Model
         DB::transaction(function () use ($subscription) {
             // Clear usage data
             $usageManager = new SubscriptionUsageManager($subscription);
-            $usageManager->saveHistory();
+            if (Config::get('plans.save_history_usage', true)) {
+                $usageManager->saveHistory();
+            }
             $usageManager->clear();
 
             // Renew period
