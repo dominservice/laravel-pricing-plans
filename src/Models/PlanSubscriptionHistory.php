@@ -30,6 +30,7 @@ class PlanSubscriptionHistory extends Model
         'used',
         'hired',
         'feature_code',
+        'plan_id'
     ];
 
     /**
