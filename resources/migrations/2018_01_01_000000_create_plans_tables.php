@@ -75,7 +75,6 @@ class CreatePlansTables extends Migration
             $table->integer('subscription_id')->unsigned();
             $table->string('feature_code');
             $table->smallInteger('used')->unsigned()->default(0);
-            $table->smallInteger('used')->unsigned()->default(0);
             $table->timestamp('valid_until')->nullable();
             $table->timestamps();
 
@@ -109,6 +108,7 @@ class CreatePlansTables extends Migration
     {
         $tables = Config::get('plans.tables');
 
+        Schema::dropIfExists($tables['plan_subscription_history']);
         Schema::dropIfExists($tables['plan_subscription_usages']);
         Schema::dropIfExists($tables['plan_subscriptions']);
         Schema::dropIfExists($tables['plan_features']);
