@@ -86,6 +86,7 @@ class CreatePlansTables extends Migration
         Schema::create($tables['plan_subscription_history'], function (Blueprint $table) use ($tables) {
             $table->increments('id');
             $table->integer('subscription_id')->unsigned();
+            $table->integer('plan_id')->unsigned();
             $table->string('feature_code');
             $table->smallInteger('used')->unsigned()->default(0);
             $table->smallInteger('hired')->unsigned()->default(0);
@@ -93,6 +94,7 @@ class CreatePlansTables extends Migration
             $table->timestamp('ends_at');
             $table->timestamps();
 
+            $table->foreign('plan_id')->references('id')->on($tables['plans'])->onDelete('cascade');
             $table->foreign('subscription_id')->references('id')->on($tables['plan_subscriptions'])->onDelete('cascade');
             $table->foreign('feature_code')->references('code')->on($tables['features'])->onDelete('cascade');
             $table->unique(['subscription_id', 'feature_code'], 'unique_sub_feat_hist');

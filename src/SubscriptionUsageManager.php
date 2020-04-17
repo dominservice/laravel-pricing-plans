@@ -94,8 +94,9 @@ class SubscriptionUsageManager
                 'feature_code' => $feature->code,
                 'starts_at'    => $this->subscription->starts_at,
                 'ends_at'      => Carbon::now(),
+                'plan_id'      => $this->subscription->plan_id
             ], [
-                'used' => $usages->where('feature_code', $feature->code)->first()->used,
+                'used'  => $usages->where('feature_code', $feature->code)->first()->used,
                 'hired' => $feature->pivot->value,
             ]);
             $history->saveOrFail();

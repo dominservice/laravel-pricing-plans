@@ -281,8 +281,10 @@ class PlanSubscription extends Model
      * Change subscription plan.
      *
      * @param int|\Laravel\PricingPlans\Models\Plan $plan Plan Id or Plan Model Instance
+     *
      * @return PlanSubscription|false
-     * @throws InvalidArgumentException
+     * @throws InvalidArgumentException*@throws \Throwable
+     * @throws \Throwable
      */
     public function changePlan($plan)
     {
@@ -313,6 +315,9 @@ class PlanSubscription extends Model
 
             // Clear usage data
             $usageManager = new SubscriptionUsageManager($this);
+            if (Config::get('plans.save_history_usage', true)) {
+                $usageManager->saveHistory();
+            }
             $usageManager->clear();
         }
 

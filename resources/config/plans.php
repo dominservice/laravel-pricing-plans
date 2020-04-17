@@ -23,7 +23,7 @@ return [
     | Save history usage
     |--------------------------------------------------------------------------
     |
-    | This option save the current usage before renew the plan
+    | This option save the current usage before renew or change the plan
     |
     */
     'save_history_usage' => true,

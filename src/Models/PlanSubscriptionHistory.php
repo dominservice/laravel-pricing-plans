@@ -85,6 +85,20 @@ class PlanSubscriptionHistory extends Model
     }
 
     /**
+     * Get subscription.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function plan()
+    {
+        return $this->belongsTo(
+            Config::get('plans.models.Plan'),
+            'plan_id',
+            'id'
+        );
+    }
+
+    /**
      * Scope by feature code.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
