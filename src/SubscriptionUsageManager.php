@@ -93,11 +93,11 @@ class SubscriptionUsageManager
                 'feature_code' => $feature->code,
                 'starts_at'    => $this->subscription->starts_at->toDateString(),
                 'plan_id'      => $this->subscription->plan_id
-            ], [
-                'ends_at' => Carbon::now()->toDateString(),
-                'used'    => $this->subscription->ability()->consumed($feature->code),
-                'hired'   => $this->subscription->ability()->value($feature->code, 0),
             ]);
+
+            $history->ends_at = Carbon::now()->toDateString();
+            $history->used    = $this->subscription->ability()->consumed($feature->code);
+            $history->hired   = $this->subscription->ability()->value($feature->code, 0);
             $history->saveOrFail();
         }
 
