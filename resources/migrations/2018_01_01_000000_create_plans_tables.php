@@ -97,7 +97,7 @@ class CreatePlansTables extends Migration
             $table->foreign('plan_id')->references('id')->on($tables['plans'])->onDelete('cascade');
             $table->foreign('subscription_id')->references('id')->on($tables['plan_subscriptions'])->onDelete('cascade');
             $table->foreign('feature_code')->references('code')->on($tables['features'])->onDelete('cascade');
-            $table->unique(['subscription_id', 'feature_code'], 'unique_sub_feat_hist');
+            $table->unique(['subscription_id', 'feature_code', 'plan_id'], 'unique_sub_feat_plan_hist');
         });
     }
 
