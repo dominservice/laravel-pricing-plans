@@ -147,6 +147,32 @@ class PlanSubscription extends Model
     }
 
     /**
+     * Get subscription usage.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function history()
+    {
+        return $this->hasMany(
+            Config::get('plans.models.PlanSubscriptionHistory'),
+            'subscription_id',
+            'id'
+        );
+    }
+
+    /**
+     * @param $feature
+     *
+     * @return mixed
+     */
+    public function usageCount($feature)
+    {
+        return $this->whereHas('usage', function ($query) use ($feature) {
+            $query->byFeature($feature);
+        })->get()->sum('used');
+    }
+
+    /**
      * Get status attribute.
      *
      * @return string
@@ -299,12 +325,13 @@ class PlanSubscription extends Model
     /**
      * Renew subscription period.
      *
+     * @param bool $force
+     *
      * @return self
-     * @throws LogicException
      */
-    public function renew()
+    public function renew($force = true)
     {
-        if ($this->isEnded() and $this->isCanceled()) {
+        if ($this->isEnded() and $this->isCanceled() and !$force) {
             throw new LogicException(
                 'Unable to renew canceled ended subscription.'
             );
@@ -315,6 +342,7 @@ class PlanSubscription extends Model
         DB::transaction(function () use ($subscription) {
             // Clear usage data
             $usageManager = new SubscriptionUsageManager($subscription);
+            $usageManager->saveHistory();
             $usageManager->clear();
 
             // Renew period
@@ -364,8 +392,8 @@ class PlanSubscription extends Model
      */
     public function scopeFindEndingTrial($query, $dayRange = 3)
     {
-        $from = Carbon::now();
-        $to = Carbon::now()->addDays($dayRange);
+        $from = Carbon::now()->startOfDay();
+        $to = Carbon::now()->addDays($dayRange)->endOfDay();
 
         return $query->whereBetween('trial_ends_at', [$from, $to]);
     }
@@ -390,8 +418,8 @@ class PlanSubscription extends Model
      */
     public function scopeFindEndingPeriod($query, $dayRange = 3)
     {
-        $from = Carbon::now();
-        $to = Carbon::now()->addDays($dayRange);
+        $from = Carbon::now()->startOfDay();
+        $to = Carbon::now()->addDays($dayRange)->endOfDay();
 
         return $query->whereBetween('ends_at', [$from, $to]);
     }
@@ -410,10 +438,12 @@ class PlanSubscription extends Model
     /**
      * Set subscription period.
      *
-     * @param  string $intervalUnit
-     * @param  int $intervalCount
-     * @param  null|int|string|\DateTime $startAt Start time
+     * @param string                    $intervalUnit
+     * @param int                       $intervalCount
+     * @param null|int|string|\DateTime $startAt Start time
+     *
      * @return  PlanSubscription
+     * @throws \Exception
      */
     protected function setNewPeriod(string $intervalUnit = '', int $intervalCount = 0, $startAt = null)
     {

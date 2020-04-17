@@ -106,7 +106,7 @@ class SubscriptionBuilder
 
         return $this->subscriber->subscriptions()->create(array_replace([
             'plan_id' => $this->plan->id,
-            'trial_ends_at' => $trialEndsAt,
+            'trial_ends_at' => $trialEndsAt ? $trialEndsAt->endOfDay() : null,
             'name' => $this->name
         ], $attributes));
     }

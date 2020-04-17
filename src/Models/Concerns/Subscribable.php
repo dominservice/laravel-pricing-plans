@@ -33,7 +33,7 @@ trait Subscribable
     {
         if ($this->relationLoaded('subscriptions')) {
             return $this->subscriptions
-                ->orderByDesc(function ($subscription) {
+                ->sortByDesc(function ($subscription) {
                     return $subscription->created_at->getTimestamp();
                 })
                 ->first(function ($subscription) use ($name) {

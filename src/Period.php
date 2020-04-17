@@ -60,10 +60,12 @@ class Period
     /**
      * Create a new Period instance.
      *
-     * @param string $intervalUnit Interval Unit
-     * @param int $intervalCount Interval count
-     * @param null|string|int|\DateTime $startAt Starting point
-     * @throws InvalidArgumentException
+     * @param string                    $intervalUnit  Interval Unit
+     * @param int                       $intervalCount Interval count
+     * @param null|string|int|\DateTime $startAt       Starting point
+     *
+     * @throws InvalidArgumentException*@throws \Exception
+     * @throws \Exception
      */
     public function __construct(string $intervalUnit = 'month', int $intervalCount = 1, $startAt = null)
     {
@@ -138,7 +140,10 @@ class Period
     protected function calculate()
     {
         $method = $this->getMethod();
-        $this->endAt = (clone $this->startAt)->$method($this->intervalCount);
+        $this->endAt = (clone $this->startAt)
+            ->$method($this->intervalCount)
+            ->subDay()
+            ->endOfDay();
     }
 
     /**

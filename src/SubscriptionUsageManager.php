@@ -2,8 +2,10 @@
 
 namespace Laravel\PricingPlans;
 
+use Carbon\Carbon;
 use Laravel\PricingPlans\Models\Feature;
 use Laravel\PricingPlans\Models\PlanSubscription;
+use Laravel\PricingPlans\Models\PlanSubscriptionHistory;
 
 class SubscriptionUsageManager
 {
@@ -76,6 +78,30 @@ class SubscriptionUsageManager
     public function reduce($featureId, $uses = 1)
     {
         return $this->record($featureId, -$uses);
+    }
+
+    /**
+     * Save usage data.
+     *
+     * @return self
+     * @throws \Throwable
+     */
+    public function saveHistory()
+    {
+        $features = $this->subscription->plan->features;
+        foreach ($this->subscription->usage as $usage) {
+            $history = $this->subscription->history()->firstOrNew([
+                'feature_code' => $usage->feature_code,
+                'starts_at'    => $this->subscription->starts_at,
+                'ends_at'      => Carbon::now(),
+            ], [
+                'used' => $usage->used,
+                'hired' => $features->where('code', $usage->feature_code)->sum('value'),
+            ]);
+            $history->saveOrFail();
+        }
+
+        return $this;
     }
 
     /**
