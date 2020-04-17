@@ -29,7 +29,7 @@ trait Subscribable
      * @param  string $name Subscription name
      * @return \Laravel\PricingPlans\Models\PlanSubscription|null
      */
-    public function subscription(string $name = 'default')
+    public function subscription(string $name = 'main')
     {
         if ($this->relationLoaded('subscriptions')) {
             return $this->subscriptions
@@ -87,7 +87,7 @@ trait Subscribable
      * @param  string $subscription Subscription name
      * @return \Laravel\PricingPlans\SubscriptionUsageManager
      */
-    public function subscriptionUsage(string $subscription)
+    public function subscriptionUsage(string $subscription = 'main')
     {
         return new SubscriptionUsageManager($this->subscription($subscription));
     }
