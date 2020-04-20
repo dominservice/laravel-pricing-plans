@@ -161,18 +161,6 @@ class PlanSubscription extends Model
     }
 
     /**
-     * @param $feature
-     *
-     * @return mixed
-     */
-    public function usageCount($feature)
-    {
-        return $this->whereHas('usage', function ($query) use ($feature) {
-            $query->byFeature($feature);
-        })->get()->sum('used');
-    }
-
-    /**
      * Get status attribute.
      *
      * @return string
