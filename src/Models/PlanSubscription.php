@@ -87,6 +87,13 @@ class PlanSubscription extends Model
     protected $ability;
 
     /**
+     * Subscription Ability Manager instance.
+     *
+     * @var \Laravel\PricingPlans\SubscriptionUsageManager
+     */
+    protected $usageManager;
+
+    /**
      * Boot function for using with User Events.
      *
      * @return void
@@ -302,8 +309,7 @@ class PlanSubscription extends Model
             $this->setNewPeriod($plan->interval_unit, $plan->interval_count);
 
             // Clear usage data
-            $usageManager = new SubscriptionUsageManager($this);
-            $usageManager->clear();
+            $this->usageManager()->clear();
         }
 
         // Attach new plan to subscription
@@ -331,11 +337,10 @@ class PlanSubscription extends Model
 
         DB::transaction(function () use ($subscription) {
             // Clear usage data
-            $usageManager = new SubscriptionUsageManager($subscription);
             if (Config::get('plans.save_history_usage', true)) {
-                $usageManager->saveHistory();
+                $this->usageManager()->saveHistory();
             }
-            $usageManager->clear();
+            $this->usageManager()->clear();
 
             // Renew period
             $subscription->setNewPeriod();
@@ -360,6 +365,20 @@ class PlanSubscription extends Model
         }
 
         return $this->ability;
+    }
+
+    /**
+     * Get Subscription Ability instance.
+     *
+     * @return \Laravel\PricingPlans\SubscriptionUsageManager
+     */
+    public function usageManager()
+    {
+        if (is_null($this->usageManager)) {
+            return new SubscriptionUsageManager($this);
+        }
+
+        return $this->usageManager;
     }
 
     /**

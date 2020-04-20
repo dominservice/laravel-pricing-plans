@@ -89,6 +89,7 @@ trait Subscribable
      */
     public function subscriptionUsage(string $subscription = 'main')
     {
-        return new SubscriptionUsageManager($this->subscription($subscription));
+        $subscription = $this->subscription($subscription);
+        return $subscription ? $subscription->usageManager() : null;
     }
 }
