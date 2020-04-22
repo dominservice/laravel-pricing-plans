@@ -1,6 +1,11 @@
 <?php
 
 return [
+
+    'active' => 'active',
+    'canceled' => 'canceled',
+    'ended' => 'ended',
+
     'day' => 'Day',
     'week' => 'Week',
     'month' => 'Month',

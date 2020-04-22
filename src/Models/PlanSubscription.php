@@ -40,13 +40,6 @@ class PlanSubscription extends Model
     use BelongsToPlanModel;
 
     /**
-     * Subscription statuses
-     */
-    const STATUS_ACTIVE = 'active';
-    const STATUS_CANCELED = 'canceled';
-    const STATUS_ENDED = 'ended';
-
-    /**
      * The attributes that are mass assignable.
      *
      * @var array
@@ -174,16 +167,16 @@ class PlanSubscription extends Model
      */
     public function getStatusAttribute()
     {
-        if ($this->isActive()) {
-            return self::STATUS_ACTIVE;
-        }
-
         if ($this->isCanceled()) {
-            return self::STATUS_CANCELED;
+            return Config::get('plans.tables.canceled');
         }
 
         if ($this->isEnded()) {
-            return self::STATUS_ENDED;
+            return Config::get('plans.tables.ended');
+        }
+
+        if ($this->isActive()) {
+            return Config::get('plans.tables.active');
         }
 
         return null;
