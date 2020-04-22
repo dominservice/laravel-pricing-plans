@@ -169,15 +169,15 @@ class PlanSubscription extends Model
     public function getStatusAttribute()
     {
         if ($this->isCanceled()) {
-            return Lang::get('plans.canceled');
+            return Lang::get('plans::messages.canceled');
         }
 
         if ($this->isEnded()) {
-            return Lang::get('plans.ended');
+            return Lang::get('plans::messages.ended');
         }
 
         if ($this->isActive()) {
-            return Lang::get('plans.active');
+            return Lang::get('plans::messages.active');
         }
 
         return null;
