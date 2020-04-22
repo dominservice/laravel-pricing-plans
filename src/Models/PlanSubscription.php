@@ -319,7 +319,7 @@ class PlanSubscription extends Model
      *
      * @return self
      */
-    public function renew($force = true)
+    public function renew($force = false)
     {
         if ($this->isEnded() and $this->isCanceled() and !$force) {
             throw new LogicException(
