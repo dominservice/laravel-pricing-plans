@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Lang;
 use InvalidArgumentException;
 use Laravel\PricingPlans\Events\SubscriptionCanceled;
 use Laravel\PricingPlans\Events\SubscriptionPlanChanged;
@@ -168,15 +169,15 @@ class PlanSubscription extends Model
     public function getStatusAttribute()
     {
         if ($this->isCanceled()) {
-            return Config::get('plans.tables.canceled');
+            return Lang::get('plans.canceled');
         }
 
         if ($this->isEnded()) {
-            return Config::get('plans.tables.ended');
+            return Lang::get('plans.ended');
         }
 
         if ($this->isActive()) {
-            return Config::get('plans.tables.active');
+            return Lang::get('plans.active');
         }
 
         return null;
