@@ -3,9 +3,12 @@
 namespace Laravel\PricingPlans;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Laravel\PricingPlans\Models\Feature;
 use Laravel\PricingPlans\Models\PlanSubscription;
 use Laravel\PricingPlans\Models\PlanSubscriptionHistory;
+use Laravel\PricingPlans\Models\PlanSubscriptionUsage;
 
 class SubscriptionUsageManager
 {
@@ -42,28 +45,36 @@ class SubscriptionUsageManager
         /** @var \Laravel\PricingPlans\Models\Feature $feature */
         $feature = Feature::code($featureCode)->first();
 
+        /** @var PlanSubscriptionUsage $usage */
         $usage = $this->subscription->usage()->firstOrNew([
             'feature_code' => $feature->code,
         ]);
 
-        if ($feature->isResettable()) {
-            // Set expiration date when the usage record is new or doesn't have one.
-            if (is_null($usage->valid_until)) {
-                // Set date from subscription creation date so the reset period match the period specified
-                // by the subscription's plan.
-                $usage->valid_until = $feature->getResetTime($this->subscription->created_at);
-            } elseif ($usage->isExpired()) {
-                // If the usage record has been expired, let's assign
-                // a new expiration date and reset the uses to zero.
-                $usage->valid_until = $feature->getResetTime($usage->valid_until);
-                $usage->used = 0;
+        try {
+            DB::beginTransaction();
+            if ($feature->isResettable()) {
+                // Set expiration date when the usage record is new or doesn't have one.
+                if (is_null($usage->valid_until)) {
+                    // Set date from subscription creation date so the reset period match the period specified
+                    // by the subscription's plan.
+                    $usage->valid_until = $feature->getResetTime($this->subscription->created_at);
+                } elseif ($usage->isExpired()) {
+                    // If the usage record has been expired, let's assign
+                    // a new expiration date and reset the uses to zero.
+                    $usage->valid_until = $feature->getResetTime($usage->valid_until);
+                    $usage->used = 0;
+                    $this->saveHistory($usage);
+                }
             }
+
+            $usage->used = max($incremental ? $usage->used + $uses : $uses, 0);
+
+            $usage->saveOrFail();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw new $e;
         }
-
-        $usage->used = max($incremental ? $usage->used + $uses : $uses, 0);
-
-        $usage->saveOrFail();
-
         return $usage;
     }
 
@@ -83,18 +94,31 @@ class SubscriptionUsageManager
     /**
      * Save usage data.
      *
+     * @param PlanSubscriptionUsage|null $planSubscriptionUsage
+     *
      * @return self
      * @throws \Throwable
      */
-    public function saveHistory()
+    public function saveHistory(PlanSubscriptionUsage $planSubscriptionUsage = null)
     {
-        foreach ($this->subscription->plan->features as $feature) {
+        if ($planSubscriptionUsage) {
+            $features = $planSubscriptionUsage->feature()->get();
+        } else {
+            $features = $this->subscription->plan->features;
+        }
+
+        foreach ($features as $feature) {
+            $hired = $this->subscription->ability()->value($feature->code, 0);
+            // remove value with not count from save history
+            if (!is_numeric($hired) || in_array(strtoupper($hired), Config::get('plans.positive_words'))) {
+                continue;
+            }
+
             $history = $this->subscription->history()->firstOrNew([
                 'feature_code' => $feature->code,
                 'starts_at'    => $this->subscription->starts_at->toDateString(),
                 'plan_id'      => $this->subscription->plan_id
             ]);
-
             $history->ends_at = Carbon::now()->toDateString();
             $history->used    += $this->subscription->ability()->consumed($feature->code);
             $history->hired   += $this->subscription->ability()->value($feature->code, 0);
