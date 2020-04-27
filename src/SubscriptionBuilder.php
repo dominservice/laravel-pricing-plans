@@ -46,6 +46,11 @@ class SubscriptionBuilder
     protected $skipTrial = false;
 
     /**
+     * @var bool
+     */
+    private $overUse = false;
+
+    /**
      * Create a new subscription builder instance.
      *
      * @param  \Illuminate\Database\Eloquent\Model $subscriber
@@ -85,6 +90,18 @@ class SubscriptionBuilder
     }
 
     /**
+     * Do not apply trial to the subscription.
+     *
+     * @return self
+     */
+    public function overUse()
+    {
+        $this->overUse = true;
+
+        return $this;
+    }
+
+    /**
      * Create a new subscription.
      *
      * @param  array  $attributes
@@ -106,6 +123,7 @@ class SubscriptionBuilder
 
         return $this->subscriber->subscriptions()->create(array_replace([
             'plan_id' => $this->plan->id,
+            'over_use' => $this->overUse,
             'trial_ends_at' => $trialEndsAt ? $trialEndsAt->endOfDay() : null,
             'name' => $this->name
         ], $attributes));

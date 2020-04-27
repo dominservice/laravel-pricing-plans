@@ -52,6 +52,7 @@ class PlanSubscription extends Model
         'ends_at',
         'canceled_at',
         'plan_id',
+        'over_use'
     ];
 
     /**
@@ -66,6 +67,15 @@ class PlanSubscription extends Model
         'ends_at',
         'canceled_at',
         'trial_ends_at',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'over_use' => 'boolean'
     ];
 
     /**
@@ -229,6 +239,17 @@ class PlanSubscription extends Model
     public function isCanceledImmediately(): bool
     {
         return !is_null($this->canceled_at) && $this->canceled_immediately === true;
+    }
+
+
+    /**
+     * Check if subscription can over use contracted plan.
+     *
+     * @return bool
+     */
+    public function canOverUse(): bool
+    {
+        return (boolean) $this->over_use;
     }
 
     /**

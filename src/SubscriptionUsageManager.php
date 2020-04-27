@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Laravel\PricingPlans\Models\Feature;
 use Laravel\PricingPlans\Models\PlanSubscription;
-use Laravel\PricingPlans\Models\PlanSubscriptionHistory;
 use Laravel\PricingPlans\Models\PlanSubscriptionUsage;
 
 class SubscriptionUsageManager

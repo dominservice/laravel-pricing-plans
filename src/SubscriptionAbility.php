@@ -53,7 +53,7 @@ class SubscriptionAbility
         }
 
         // Check for available uses
-        return $this->remainings($featureCode) > 0;
+        return $this->remainings($featureCode) > 0 || $this->subscription->canOverUse();
     }
 
     /**
