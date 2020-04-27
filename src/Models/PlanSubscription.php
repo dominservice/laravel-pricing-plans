@@ -360,6 +360,7 @@ class PlanSubscription extends Model
             // Renew period
             $subscription->setNewPeriod();
             $subscription->canceled_at = null;
+            $subscription->canceled_immediately = null;
             $subscription->save();
         });
 
