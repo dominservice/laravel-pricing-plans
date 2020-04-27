@@ -92,11 +92,13 @@ class SubscriptionBuilder
     /**
      * Do not apply trial to the subscription.
      *
+     * @param $overUse
+     *
      * @return self
      */
-    public function overUse()
+    public function overUse($overUse = true)
     {
-        $this->overUse = true;
+        $this->overUse = $overUse;
 
         return $this;
     }
