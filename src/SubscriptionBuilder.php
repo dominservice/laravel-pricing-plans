@@ -4,6 +4,7 @@ namespace Laravel\PricingPlans;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Laravel\PricingPlans\Models\Plan;
 
 class SubscriptionBuilder
@@ -123,6 +124,7 @@ class SubscriptionBuilder
             $trialEndsAt = null;
         }
 
+        Cache::forget('plan_subscription_' . $this->{$this->getKeyName()});
         return $this->subscriber->subscriptions()->create(array_replace([
             'plan_id' => $this->plan->id,
             'over_use' => $this->overUse,

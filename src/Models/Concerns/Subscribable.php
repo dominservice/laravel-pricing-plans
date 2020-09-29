@@ -3,6 +3,7 @@
 namespace Laravel\PricingPlans\Models\Concerns;
 
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Laravel\PricingPlans\Models\Plan;
 use Laravel\PricingPlans\SubscriptionBuilder;
@@ -31,20 +32,25 @@ trait Subscribable
      */
     public function subscription(string $name = 'main')
     {
-        if ($this->relationLoaded('subscriptions')) {
-            return $this->subscriptions
-                ->sortByDesc(function ($subscription) {
-                    return $subscription->created_at->getTimestamp();
-                })
-                ->first(function ($subscription) use ($name) {
-                    return $subscription->name === $name;
-                });
-        }
+        return Cache::remember(
+            'plan_subscription_' . $this->{$this->getKeyName()},
+            ceil((strtotime('tomorrow') - time()) / 60),
+            function() use ($name) {
+                if ($this->relationLoaded('subscriptions')) {
+                    return $this->subscriptions
+                        ->sortByDesc(function ($subscription) {
+                            return $subscription->created_at->getTimestamp();
+                        })
+                        ->first(function ($subscription) use ($name) {
+                            return $subscription->name === $name;
+                        });
+                }
 
-        return $this->subscriptions()
-            ->where('name', $name)
-            ->orderByDesc('created_at')
-            ->first();
+                return $this->subscriptions()
+                    ->where('name', $name)
+                    ->orderByDesc('created_at')
+                    ->first();
+            });
     }
 
     /**
