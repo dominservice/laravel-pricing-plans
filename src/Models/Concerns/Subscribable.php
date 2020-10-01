@@ -32,7 +32,7 @@ trait Subscribable
     {
         return Cache::remember(
             sprintf('plan_subscription_%s', $this->{$this->getKeyName()}),
-            ceil((strtotime('tomorrow') - time()) / 60),
+            60 * 24,
             function() use ($name) {
                 if ($this->relationLoaded('subscriptions')) {
                     return $this->subscriptions

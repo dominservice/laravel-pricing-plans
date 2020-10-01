@@ -124,7 +124,7 @@ class SubscriptionAbility
                 $this->subscription->{$this->subscription->getKeyName()},
                 $featureCode
             ),
-            ceil((strtotime('tomorrow') - time()) / 60),
+            60 * 24,
             function() use ($featureCode, $default) {
                 if (!$this->subscription->plan->relationLoaded('features')) {
                     $this->subscription->plan->load('features');
