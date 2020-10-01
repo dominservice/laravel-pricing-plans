@@ -119,7 +119,11 @@ class SubscriptionAbility
     public function value(string $featureCode, $default = null)
     {
         return Cache::remember(
-            sprintf('plan_subscription_%s_feature_%s', $this->{$this->getKeyName()}, $featureCode),
+            sprintf(
+                'plan_subscription_%s_feature_%s',
+                $this->subscription->{$this->subscription->getKeyName()},
+                $featureCode
+            ),
             ceil((strtotime('tomorrow') - time()) / 60),
             function() use ($featureCode, $default) {
                 if (!$this->subscription->plan->relationLoaded('features')) {
