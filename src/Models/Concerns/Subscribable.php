@@ -2,12 +2,10 @@
 
 namespace Laravel\PricingPlans\Models\Concerns;
 
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Laravel\PricingPlans\Models\Plan;
 use Laravel\PricingPlans\SubscriptionBuilder;
-use Laravel\PricingPlans\SubscriptionUsageManager;
 
 trait Subscribable
 {
@@ -33,7 +31,7 @@ trait Subscribable
     public function subscription(string $name = 'main')
     {
         return Cache::remember(
-            'plan_subscription_' . $this->{$this->getKeyName()},
+            sprintf('plan_subscription_%s', $this->{$this->getKeyName()}),
             ceil((strtotime('tomorrow') - time()) / 60),
             function() use ($name) {
                 if ($this->relationLoaded('subscriptions')) {

@@ -4,6 +4,7 @@ namespace Laravel\PricingPlans\Models;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
@@ -273,6 +274,8 @@ class PlanSubscription extends Model
      */
     public function cancel($immediately = false)
     {
+
+        Cache::forget(sprintf('plan_subscription_%s', $this->{$this->getKeyName()}));
         $this->canceled_at = Carbon::now();
 
         if ($immediately) {
@@ -329,7 +332,7 @@ class PlanSubscription extends Model
 
         // Attach new plan to subscription
         $this->plan_id = $plan->id;
-
+        Cache::forget(sprintf('plan_subscription_%s', $this->{$this->getKeyName()}));
         return $this;
     }
 
@@ -365,7 +368,7 @@ class PlanSubscription extends Model
         });
 
         Event::dispatch(new SubscriptionRenewed($this));
-
+        Cache::forget(sprintf('plan_subscription_%s', $this->{$this->getKeyName()}));
         return $this;
     }
 
@@ -508,7 +511,7 @@ class PlanSubscription extends Model
 
         $this->starts_at = $period->getStartAt();
         $this->ends_at = $period->getEndAt();
-
+        Cache::forget(sprintf('plan_subscription_%s', $this->{$this->getKeyName()}));
         return $this;
     }
 }

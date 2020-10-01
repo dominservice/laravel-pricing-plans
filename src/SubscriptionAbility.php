@@ -2,6 +2,7 @@
 
 namespace Laravel\PricingPlans;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Laravel\PricingPlans\Models\PlanSubscription;
 
@@ -117,17 +118,23 @@ class SubscriptionAbility
      */
     public function value(string $featureCode, $default = null)
     {
-        if (!$this->subscription->plan->relationLoaded('features')) {
-            $this->subscription->plan->features()->getEager();
-        }
+        return Cache::remember(
+            sprintf('plan_subscription_%s_feature_%s', $this->{$this->getKeyName()}, $featureCode),
+            ceil((strtotime('tomorrow') - time()) / 60),
+            function() use ($featureCode, $default) {
+                if (!$this->subscription->plan->relationLoaded('features')) {
+                    $this->subscription->plan->load('features');
+                }
 
-        /** @var \Laravel\PricingPlans\Models\Feature $feature */
-        foreach ($this->subscription->plan->features as $feature) {
-            if ($featureCode === $feature->code) {
-                return $feature->pivot->value;
-            }
-        }
+                /** @var \Laravel\PricingPlans\Models\Feature $feature */
+                foreach ($this->subscription->plan->features as $feature) {
+                    if ($featureCode === $feature->code) {
+                        return $feature->pivot->value;
+                    }
+                }
 
-        return $default;
+                return $default;
+        });
+
     }
 }
