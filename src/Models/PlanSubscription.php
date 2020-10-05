@@ -332,7 +332,7 @@ class PlanSubscription extends Model
 
         // Attach new plan to subscription
         $this->plan_id = $plan->id;
-        Cache::forget(sprintf('plan_subscription_%s', $this->{$this->getKeyName()}));
+        Cache::forget(sprintf('plan_subscription_%s', $this->subscriber_id));
         return $this;
     }
 
@@ -368,7 +368,7 @@ class PlanSubscription extends Model
         });
 
         Event::dispatch(new SubscriptionRenewed($this));
-        Cache::forget(sprintf('plan_subscription_%s', $this->{$this->getKeyName()}));
+        Cache::forget(sprintf('plan_subscription_%s', $this->subscriber_id));
         return $this;
     }
 
@@ -511,7 +511,7 @@ class PlanSubscription extends Model
 
         $this->starts_at = $period->getStartAt();
         $this->ends_at = $period->getEndAt();
-        Cache::forget(sprintf('plan_subscription_%s', $this->{$this->getKeyName()}));
+        Cache::forget(sprintf('plan_subscription_%s', $this->subscriber_id));
         return $this;
     }
 }
