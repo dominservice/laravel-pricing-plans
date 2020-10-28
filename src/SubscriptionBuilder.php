@@ -124,7 +124,7 @@ class SubscriptionBuilder
             $trialEndsAt = null;
         }
 
-        Cache::forget(sprintf('plan_subscription_%s', $this->{$this->getKeyName()}));
+        Cache::forget(sprintf('plan_subscription_%s', $this->subscriber->{$this->subscriber->getKeyName()}));
         return $this->subscriber->subscriptions()->create(array_replace([
             'plan_id' => $this->plan->id,
             'over_use' => $this->overUse,
