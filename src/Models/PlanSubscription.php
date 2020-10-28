@@ -274,8 +274,7 @@ class PlanSubscription extends Model
      */
     public function cancel($immediately = false)
     {
-
-        Cache::forget(sprintf('plan_subscription_%s', $this->{$this->getKeyName()}));
+        Cache::forget(sprintf('plan_subscription_%s', $this->subscriber_id));
         $this->canceled_at = Carbon::now();
 
         if ($immediately) {
