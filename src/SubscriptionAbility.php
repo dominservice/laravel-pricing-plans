@@ -67,7 +67,7 @@ class SubscriptionAbility
     {
         /** @var \Laravel\PricingPlans\Models\PlanSubscriptionUsage $usage */
         foreach ($this->subscription->usage as $usage) {
-            if ($usage->feature_code === $featureCode && !$usage->isExpired()) {
+            if ($usage->feature_code === $featureCode) {
                 return (int) $usage->used;
             }
         }
@@ -83,7 +83,12 @@ class SubscriptionAbility
      */
     public function remainings(string $featureCode): int
     {
-        return (int)$this->value($featureCode) - $this->consumed($featureCode);
+        if ($usage = $this->subscription->usage->where('feature_code', $featureCode)->first()) {
+            if ($usage->isExpired()) {
+                return 0;
+            }
+        }
+        return (int) $this->value($featureCode) - $this->consumed($featureCode);
     }
 
     /**
