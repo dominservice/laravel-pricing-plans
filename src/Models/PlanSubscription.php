@@ -275,6 +275,11 @@ class PlanSubscription extends Model
     public function cancel($immediately = false)
     {
         Cache::forget(sprintf('plan_subscription_%s', $this->subscriber_id));
+
+        if (Config::get('plans.save_history_usage', true)) {
+            $this->usageManager()->saveHistory();
+        }
+
         $this->canceled_at = Carbon::now();
 
         if ($immediately) {
@@ -312,6 +317,10 @@ class PlanSubscription extends Model
 
         if (is_null($plan) || !($plan instanceof Plan)) {
             throw new InvalidArgumentException('Invalid plan instance');
+        }
+
+        if (Config::get('plans.save_history_usage', true)) {
+            $this->usageManager()->saveHistory();
         }
 
         // If plans doesn't have the same billing frequency (e.g., interval
@@ -379,7 +388,7 @@ class PlanSubscription extends Model
     public function ability()
     {
         if (is_null($this->ability)) {
-            return new SubscriptionAbility($this);
+            return  $this->ability = new SubscriptionAbility($this);
         }
 
         return $this->ability;
@@ -393,7 +402,7 @@ class PlanSubscription extends Model
     public function usageManager()
     {
         if (is_null($this->usageManager)) {
-            return new SubscriptionUsageManager($this);
+            return $this->usageManager = new SubscriptionUsageManager($this);
         }
 
         return $this->usageManager;

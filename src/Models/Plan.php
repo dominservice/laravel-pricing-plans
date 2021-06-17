@@ -4,10 +4,8 @@ namespace Laravel\PricingPlans\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Lang;
 use Laravel\PricingPlans\Models\Concerns\HasCode;
 use Laravel\PricingPlans\Models\Concerns\Resettable;
-use Laravel\PricingPlans\Period;
 
 /**
  * Class Plan
