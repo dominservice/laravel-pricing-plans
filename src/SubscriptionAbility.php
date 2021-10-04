@@ -23,6 +23,7 @@ class SubscriptionAbility
     public function __construct(PlanSubscription $subscription)
     {
         $this->subscription = $subscription;
+        $this->subscription->load('usage', 'history');
     }
 
     /**
