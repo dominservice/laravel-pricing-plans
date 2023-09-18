@@ -1,5 +1,5 @@
 # Laravel Pricing Plans
-Easy provide pricing plans for Your Laravel 5.4+ Application.
+Easy provide pricing plans for Your Laravel 10+ Application.
 
 <!-- MarkdownTOC depth="2" autolink="true" bracket="round" -->
 
@@ -8,7 +8,6 @@ Easy provide pricing plans for Your Laravel 5.4+ Application.
 - [Requirements](#requirements)
 - [Installation](#installation)
     - [Composer](#composer)
-    - [Service Provider](#service-provider)
     - [Config file and Migrations](#config-file-and-migrations)
     - [Contract and Traits](#contract-and-traits)
 - [Config File](#config-file)
@@ -44,18 +43,17 @@ Easy provide pricing plans for Your Laravel 5.4+ Application.
 
 ## Main features
 
-Easy provide pricing plans for Your Laravel 5.4+ Application.
+Easy provide pricing plans for Your Laravel 10+ Application.
 
 ## TODO
 
 - [ ] Caching some select query
-- [ ] Add unit test scripts
 - [ ] Make better documents
 
 ## Requirements
 
-* php >=7.0
-* Laravel 5.4+
+* php >=8.1
+* Laravel 10+
 
 ## Installation
 
@@ -64,21 +62,7 @@ Easy provide pricing plans for Your Laravel 5.4+ Application.
 Begin by pulling in the package through Composer.
 
 ```bash
-$ composer require oanhnn/laravel-pricing-plans
-```
-
-### Service Provider
-
-Next, if using Laravel 5.5+, you done. If using Laravel 5.4, you must include the service provider within your `config/app.php` file.
-
-```php
-// config/app.php
-
-    'providers' => [
-        // Other service providers...
-
-        Dominservice\PricingPlans\PricingPlansServiceProvider::class,
-    ],
+$ composer require dominservice/laravel-pricing-plans
 ```
 
 ### Config file and Migrations
@@ -437,11 +421,11 @@ using the issue tracker.
 I forked and recreated this project from [gerardojbaez/laraplans](https://github.com/gerardojbaez/laraplans) project in mid-2017.
 Thank [Gerardo Baez](https://github.com/gerardojbaez)
 
+- [Eduardo Gusmão](https://github.com/eduardokum)
 - [Oanh Nguyen](https://github.com/oanhnn)
 - [Gerardo Baez](https://github.com/gerardojbaez)
 - [All Contributors](../../contributors)
 
 ## License
 
-This project is released under the MIT License.   
-Copyright © 2017-2018 [Oanh Nguyen](https://oanhnn.github.io/).
+This project is released under the MIT License.

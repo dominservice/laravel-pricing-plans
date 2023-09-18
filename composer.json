@@ -24,7 +24,7 @@
       "email": " eduguscontra3@hotmail.com"
     },
     {
-      "name": "dominservice",
+      "name": "DSO-IT Mateusz Domin",
       "email": "biuro@dso.biz.pl",
       "role": "Developer"
     }
@@ -35,7 +35,7 @@
     }
   },
   "require": {
-    "php": ">=8.1.0",
+    "php": ">=8.1",
     "illuminate/database": "^10",
     "illuminate/support": "^10"
   },
