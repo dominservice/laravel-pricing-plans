@@ -2,6 +2,7 @@ The MIT License (MIT)
 
 Copyright © 2016-2017 Gerardo Baez <g@gerardobaez.com>
 Copyright © 2017-2018 Oanh Nguyen <oanhnn.bk@gmail.com>
+Copyright © 2023 Mateusz Domin <biuro@dso.biz.pl>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
