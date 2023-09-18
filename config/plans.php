@@ -55,12 +55,12 @@ return [
     |
     */
     'models' => [
-        'Feature'                 => 'Laravel\\PricingPlans\\Models\\Feature',
-        'Plan'                    => 'Laravel\\PricingPlans\\Models\\Plan',
-        'PlanFeature'             => 'Laravel\\PricingPlans\\Models\\PlanFeature',
-        'PlanSubscription'        => 'Laravel\\PricingPlans\\Models\\PlanSubscription',
-        'PlanSubscriptionUsage'   => 'Laravel\\PricingPlans\\Models\\PlanSubscriptionUsage',
-        'PlanSubscriptionHistory' => 'Laravel\\PricingPlans\\Models\\PlanSubscriptionHistory',
+        'Feature'                 => 'Dominservice\\PricingPlans\\Models\\Feature',
+        'Plan'                    => 'Dominservice\\PricingPlans\\Models\\Plan',
+        'PlanFeature'             => 'Dominservice\\PricingPlans\\Models\\PlanFeature',
+        'PlanSubscription'        => 'Dominservice\\PricingPlans\\Models\\PlanSubscription',
+        'PlanSubscriptionUsage'   => 'Dominservice\\PricingPlans\\Models\\PlanSubscriptionUsage',
+        'PlanSubscriptionHistory' => 'Dominservice\\PricingPlans\\Models\\PlanSubscriptionHistory',
     ],
 
 ];

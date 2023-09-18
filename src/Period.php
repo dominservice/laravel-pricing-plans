@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\PricingPlans;
+namespace Dominservice\PricingPlans;
 
 use Carbon\Carbon;
 use DateTime;

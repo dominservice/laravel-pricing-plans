@@ -1,27 +1,26 @@
 <?php
 
-namespace Laravel\PricingPlans;
+namespace Dominservice\PricingPlans;
 
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use Laravel\PricingPlans\Models\Feature;
-use Laravel\PricingPlans\Models\PlanSubscription;
-use Laravel\PricingPlans\Models\PlanSubscriptionUsage;
+use Dominservice\PricingPlans\Models\Feature;
+use Dominservice\PricingPlans\Models\PlanSubscription;
+use Dominservice\PricingPlans\Models\PlanSubscriptionUsage;
 
 class SubscriptionUsageManager
 {
     /**
      * Subscription model instance.
      *
-     * @var \Laravel\PricingPlans\Models\PlanSubscription
+     * @var \Dominservice\PricingPlans\Models\PlanSubscription
      */
     protected $subscription;
 
     /**
      * Create new Subscription Usage Manager instance.
      *
-     * @param \Laravel\PricingPlans\Models\PlanSubscription $subscription
+     * @param \Dominservice\PricingPlans\Models\PlanSubscription $subscription
      */
     public function __construct(PlanSubscription $subscription)
     {
@@ -36,12 +35,12 @@ class SubscriptionUsageManager
      * @param string $featureCode
      * @param int $uses
      * @param bool $incremental
-     * @return \Laravel\PricingPlans\Models\PlanSubscriptionUsage
+     * @return \Dominservice\PricingPlans\Models\PlanSubscriptionUsage
      * @throws \Throwable
      */
     public function record(string $featureCode, $uses = 1, $incremental = true)
     {
-        /** @var \Laravel\PricingPlans\Models\Feature $feature */
+        /** @var \Dominservice\PricingPlans\Models\Feature $feature */
         $feature = Feature::code($featureCode)->first();
 
         /** @var PlanSubscriptionUsage $usage */
@@ -81,7 +80,7 @@ class SubscriptionUsageManager
      *
      * @param int $featureId
      * @param int $uses
-     * @return \Laravel\PricingPlans\Models\PlanSubscriptionUsage
+     * @return \Dominservice\PricingPlans\Models\PlanSubscriptionUsage
      * @throws \Throwable
      */
     public function reduce($featureId, $uses = 1)
@@ -108,7 +107,7 @@ class SubscriptionUsageManager
         foreach ($features as $feature) {
             $hired = $this->subscription->ability()->value($feature->code, 0);
             // remove value with not count from save history
-            if (!is_numeric($hired) || in_array(strtoupper($hired), Config::get('plans.positive_words'))) {
+            if (!is_numeric($hired) || in_array(strtoupper($hired), config('plans.positive_words'))) {
                 continue;
             }
 

@@ -77,7 +77,7 @@ Next, if using Laravel 5.5+, you done. If using Laravel 5.4, you must include th
     'providers' => [
         // Other service providers...
 
-        Laravel\PricingPlans\PricingPlansServiceProvider::class,
+        Dominservice\PricingPlans\PricingPlansServiceProvider::class,
     ],
 ```
 
@@ -86,7 +86,7 @@ Next, if using Laravel 5.5+, you done. If using Laravel 5.4, you must include th
 Publish package config file and migrations with the command:
 
 ```bash
-$ php artisan vendor:publish --provider="Laravel\PricingPlans\PricingPlansServiceProvider"
+$ php artisan vendor:publish --provider="Dominservice\PricingPlans\PricingPlansServiceProvider"
 ```
 
 Then run migrations:
@@ -97,7 +97,7 @@ $ php artisan migrate
 
 ### Contract and Traits
 
-Add `Laravel\PricingPlans\Contacts\Subscriber` contract and `Laravel\PricingPlans\Models\Concerns\Subscribable` trait 
+Add `Dominservice\PricingPlans\Contacts\Subscriber` contract and `Dominservice\PricingPlans\Models\Concerns\Subscribable` trait 
 to your subscriber model (Eg. `User`).
 
 See the following example:
@@ -108,8 +108,8 @@ See the following example:
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Laravel\PricingPlans\Contracts\Subscriber;
-use Laravel\PricingPlans\Models\Concerns\Subscribable;
+use Dominservice\PricingPlans\Contracts\Subscriber;
+use Dominservice\PricingPlans\Models\Concerns\Subscribable;
 
 class User extends Authenticatable implements Subscriber
 {
@@ -130,7 +130,7 @@ Take a look to the `config/plans.php` config file for more details.
 
 ## Models
 
-PricingPlans uses 5 models under namespace `Laravel\PricingPlans\Models`. You can change to using extended classes of it by 
+PricingPlans uses 5 models under namespace `Dominservice\PricingPlans\Models`. You can change to using extended classes of it by 
 changing models class in config file:
 
 ### Feature model
@@ -142,7 +142,7 @@ This model is model object of feature
 
 namespace App\Models;
 
-use Laravel\PricingPlans\Models\Feature as Model;
+use Dominservice\PricingPlans\Models\Feature as Model;
 
 class Feature extends Model
 {
@@ -159,7 +159,7 @@ This model is model object of plan
 <?php
 namespace App\Models;
 
-use Laravel\PricingPlans\Models\Plan as Model;
+use Dominservice\PricingPlans\Models\Plan as Model;
 
 class Plan extends Model
 {
@@ -180,11 +180,11 @@ This model is relation model object between plan and subscriber
 
 This model is object for counting usage feature
 
-For more details take a look to each model and the `Laravel\PricingPlans\Models\Concerns\Subscribable` trait.
+For more details take a look to each model and the `Dominservice\PricingPlans\Models\Concerns\Subscribable` trait.
 
 ## Events
 
-Events are under the namespace `Laravel\PricingPlans\Events`. The following are the events triggered by the package.
+Events are under the namespace `Dominservice\PricingPlans\Events`. The following are the events triggered by the package.
 
 ### `SubscriptionRenewed` event
 
@@ -206,8 +206,8 @@ Plan change is determine by comparing the original and current value of `plan_id
 ```php
 <?php
 
-use Laravel\PricingPlans\Models\Feature;
-use Laravel\PricingPlans\Models\Plan;
+use Dominservice\PricingPlans\Models\Feature;
+use Dominservice\PricingPlans\Models\Plan;
 
 $feature1 = Feature::create([
     'name' => 'Upload images',
@@ -255,7 +255,7 @@ to create the model's subscription.
 <?php
 
 use Illuminate\Support\Facades\Auth;
-use Laravel\PricingPlans\Models\Plan;
+use Dominservice\PricingPlans\Models\Plan;
 
 $user = Auth::user();
 $plan = Plan::code(Plan::PLAN_PRO)->firstOrFail();
@@ -389,7 +389,7 @@ $user->subscription('main')->cancel(true);
 ```php
 <?php
 
-use Laravel\PricingPlans\Models\PlanSubscription;
+use Dominservice\PricingPlans\Models\PlanSubscription;
 
 // Get subscriptions by plan:
 $subscriptions = PlanSubscription::byPlan($plan_id)->get();

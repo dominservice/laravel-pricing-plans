@@ -1,31 +1,20 @@
 <?php
 
-namespace Laravel\PricingPlans\Events;
+namespace Dominservice\PricingPlans\Events;
 
-use Laravel\PricingPlans\Models\PlanSubscription;
+use Dominservice\PricingPlans\Models\PlanSubscription;
 
 class SubscriptionPlanChanged
 {
-    /**
-     * @var PlanSubscription
-     */
-    protected $subscription;
+    use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
      * Create a new event instance.
      *
-     * @param  \Laravel\PricingPlans\Models\PlanSubscription $subscription
+     * @param  \Dominservice\PricingPlans\Models\PlanSubscription $subscription
      */
-    public function __construct(PlanSubscription $subscription)
+    public function __construct(public PlanSubscription $subscription)
     {
-        $this->subscription = $subscription;
-    }
-
-    /**
-     * @return PlanSubscription
-     */
-    public function getSubscription()
-    {
-        return $this->subscription;
+        //
     }
 }

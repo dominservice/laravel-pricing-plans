@@ -1,14 +1,13 @@
 <?php
 
-namespace Laravel\PricingPlans\Models;
+namespace Dominservice\PricingPlans\Models;
 
 use Illuminate\Database\Eloquent\Relations\Pivot;
-use Illuminate\Support\Facades\Config;
-use Laravel\PricingPlans\Models\Concerns\BelongsToPlanModel;
+use Dominservice\PricingPlans\Models\Concerns\BelongsToPlanModel;
 
 /**
  * Class PlanFeature
- * @package Laravel\PricingPlans\Models
+ * @package Dominservice\PricingPlans\Models
  * @property int $id
  * @property int $plan_id
  * @property int $feature_id
@@ -27,6 +26,8 @@ class PlanFeature extends Pivot
      * @var array
      */
     protected $fillable = [
+        'plan_id',
+        'feature_id',
         'value',
         'note',
     ];
@@ -42,15 +43,13 @@ class PlanFeature extends Pivot
     ];
 
     /**
-     * Plan constructor.
+     * Get the table associated with the model.
      *
-     * @param array $attributes
+     * @return string
      */
-    public function __construct(array $attributes = [])
+    public function getTable()
     {
-        parent::__construct($attributes);
-
-        $this->setTable(Config::get('plans.tables.plan_features'));
+        return config('plans.tables.plan_features');
     }
 
     /**
@@ -59,7 +58,7 @@ class PlanFeature extends Pivot
     public function feature()
     {
         return $this->belongsTo(
-            Config::get('plans.models.Feature'),
+            config('plans.models.Feature'),
             'feature_id',
             'id'
         );

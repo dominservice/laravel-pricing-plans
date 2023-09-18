@@ -1,9 +1,9 @@
 <?php
 
-namespace Laravel\PricingPlans\Models\Concerns;
+namespace Dominservice\PricingPlans\Models\Concerns;
 
 use Illuminate\Support\Facades\Lang;
-use Laravel\PricingPlans\Period;
+use Dominservice\PricingPlans\Period;
 
 trait Resettable
 {

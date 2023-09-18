@@ -1,17 +1,17 @@
 <?php
 
-namespace Laravel\PricingPlans\Models;
+namespace Dominservice\PricingPlans\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Config;
-use Laravel\PricingPlans\Models\Concerns\HasCode;
-use Laravel\PricingPlans\Models\Concerns\Resettable;
+use Dominservice\PricingPlans\Models\Concerns\HasCode;
+use Dominservice\PricingPlans\Models\Concerns\Resettable;
 
 /**
  * Class Plan
- * @package Laravel\PricingPlans\Models
+ * @package Dominservice\PricingPlans\Models
  * @property int $id
  * @property string $name
+ * @property string $code
  * @property string $description
  * @property float $price
  * @property string $interval_unit
@@ -73,15 +73,13 @@ class Plan extends Model
     }
 
     /**
-     * Plan constructor.
+     * Get the table associated with the model.
      *
-     * @param array $attributes
+     * @return string
      */
-    public function __construct(array $attributes = [])
+    public function getTable()
     {
-        parent::__construct($attributes);
-
-        $this->setTable(Config::get('plans.tables.plans'));
+        return config('plans.tables.plans');
     }
 
     /**
@@ -93,12 +91,12 @@ class Plan extends Model
     {
         return $this
             ->belongsToMany(
-                Config::get('plans.models.Feature'),
-                Config::get('plans.tables.plan_features'),
+                config('plans.models.Feature'),
+                config('plans.tables.plan_features'),
                 'plan_id',
                 'feature_id'
             )
-            ->using(Config::get('plans.models.PlanFeature'))
+            ->using(config('plans.models.PlanFeature'))
             ->withPivot(['value', 'note'])
             ->withTimestamps()
             ->orderBy('sort_order');
@@ -112,7 +110,7 @@ class Plan extends Model
     public function subscriptions()
     {
         return $this->hasMany(
-            Config::get('plans.models.PlanSubscription'),
+            config('plans.models.PlanSubscription'),
             'plan_id',
             'id'
         );

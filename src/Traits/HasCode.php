@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\PricingPlans\Models\Concerns;
+namespace Dominservice\PricingPlans\Models\Concerns;
 
 use Illuminate\Database\Eloquent\Builder;
 

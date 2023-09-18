@@ -1,41 +1,40 @@
 <?php
 
-namespace Laravel\PricingPlans\Models;
+namespace Dominservice\PricingPlans\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Lang;
 use InvalidArgumentException;
-use Laravel\PricingPlans\Events\SubscriptionCanceled;
-use Laravel\PricingPlans\Events\SubscriptionPlanChanged;
-use Laravel\PricingPlans\Events\SubscriptionRenewed;
-use Laravel\PricingPlans\Period;
-use Laravel\PricingPlans\SubscriptionAbility;
-use Laravel\PricingPlans\SubscriptionUsageManager;
-use Laravel\PricingPlans\Models\Concerns\BelongsToPlanModel;
+use Dominservice\PricingPlans\Events\SubscriptionCanceled;
+use Dominservice\PricingPlans\Events\SubscriptionPlanChanged;
+use Dominservice\PricingPlans\Events\SubscriptionRenewed;
+use Dominservice\PricingPlans\Period;
+use Dominservice\PricingPlans\SubscriptionAbility;
+use Dominservice\PricingPlans\SubscriptionUsageManager;
+use Dominservice\PricingPlans\Models\Concerns\BelongsToPlanModel;
 use LogicException;
 
 /**
  * Class PlanSubscription
- * @package Laravel\PricingPlans\Models
+ * @package Dominservice\PricingPlans\Models
  * @property int $id
  * @property string $subscriber_type
  * @property int $subscriber_id
  * @property int $plan_id
  * @property string $name
  * @property bool $canceled_immediately
+ * @property bool $over_use
  * @property \Carbon\Carbon $starts_at
  * @property \Carbon\Carbon $ends_at
  * @property \Carbon\Carbon $canceled_at
  * @property \Carbon\Carbon $trial_ends_at
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
- * @property-read \Laravel\PricingPlans\Models\Plan $plan
+ * @property-read \Dominservice\PricingPlans\Models\Plan $plan
  */
 class PlanSubscription extends Model
 {
@@ -47,13 +46,16 @@ class PlanSubscription extends Model
      * @var array
      */
     protected $fillable = [
+        'subscriber_type',
+        'subscriber_id',
+        'plan_id',
         'name',
+        'canceled_immediately',
+        'over_use',
         'trial_ends_at',
         'starts_at',
         'ends_at',
-        'canceled_at',
-        'plan_id',
-        'over_use'
+        'canceled_at'
     ];
 
     /**
@@ -87,14 +89,14 @@ class PlanSubscription extends Model
     /**
      * Subscription Ability Manager instance.
      *
-     * @var \Laravel\PricingPlans\SubscriptionAbility
+     * @var \Dominservice\PricingPlans\SubscriptionAbility
      */
     protected $ability;
 
     /**
      * Subscription Ability Manager instance.
      *
-     * @var \Laravel\PricingPlans\SubscriptionUsageManager
+     * @var \Dominservice\PricingPlans\SubscriptionUsageManager
      */
     protected $usageManager;
 
@@ -117,21 +119,42 @@ class PlanSubscription extends Model
         static::saved(function ($model) {
             /** @var PlanSubscription $model */
             if ($model->getOriginal('plan_id') && $model->getOriginal('plan_id') !== $model->plan_id) {
-                Event::dispatch(new SubscriptionPlanChanged($model));
+                SubscriptionPlanChanged::dispatch($model);
             }
         });
     }
 
     /**
-     * Plan constructor.
+     * Get the table associated with the model.
      *
-     * @param array $attributes
+     * @return string
      */
-    public function __construct(array $attributes = [])
+    public function getTable()
     {
-        parent::__construct($attributes);
+        return config('plans.tables.plan_subscriptions');
+    }
 
-        $this->setTable(Config::get('plans.tables.plan_subscriptions'));
+    public function status(): Attribute
+    {
+        $that = $this;
+        return Attribute::make(
+            get: function($value) use($that) {
+                if ($that->isCanceled()) {
+                    return __('plans::messages.canceled');
+                }
+
+                if ($that->isEnded()) {
+                    return __('plans::messages.ended');
+                }
+
+                if ($that->isActive()) {
+                    return __('plans::messages.active');
+                }
+
+                return null;
+            },
+            set: fn ($value) => $value,
+        );
     }
 
     /**
@@ -152,7 +175,7 @@ class PlanSubscription extends Model
     public function usage()
     {
         return $this->hasMany(
-            Config::get('plans.models.PlanSubscriptionUsage'),
+            config('plans.models.PlanSubscriptionUsage'),
             'subscription_id',
             'id'
         );
@@ -166,32 +189,10 @@ class PlanSubscription extends Model
     public function history()
     {
         return $this->hasMany(
-            Config::get('plans.models.PlanSubscriptionHistory'),
+            config('plans.models.PlanSubscriptionHistory'),
             'subscription_id',
             'id'
         );
-    }
-
-    /**
-     * Get status attribute.
-     *
-     * @return string
-     */
-    public function getStatusAttribute()
-    {
-        if ($this->isCanceled()) {
-            return Lang::get('plans::messages.canceled');
-        }
-
-        if ($this->isEnded()) {
-            return Lang::get('plans::messages.ended');
-        }
-
-        if ($this->isActive()) {
-            return Lang::get('plans::messages.active');
-        }
-
-        return null;
     }
 
     /**
@@ -276,11 +277,11 @@ class PlanSubscription extends Model
     {
         Cache::forget(sprintf('plan_subscription_%s', $this->subscriber_id));
 
-        if (Config::get('plans.save_history_usage', true)) {
+        if (config('plans.save_history_usage', true)) {
             $this->usageManager()->saveHistory();
         }
 
-        $this->canceled_at = Carbon::now();
+        $this->canceled_at = now();
 
         if ($immediately) {
             $this->canceled_immediately = true;
@@ -289,7 +290,7 @@ class PlanSubscription extends Model
 
         $this->saveOrFail();
 
-        Event::dispatch(new SubscriptionCanceled($this));
+        SubscriptionCanceled::dispatch($this);
 
         return $this;
     }
@@ -297,21 +298,21 @@ class PlanSubscription extends Model
     /**
      * Change subscription plan.
      *
-     * @param int|\Laravel\PricingPlans\Models\Plan $plan Plan Id or Plan Model Instance
+     * @param int|\Dominservice\PricingPlans\Models\Plan $plan Plan Id or Plan Model Instance
      *
      * @return PlanSubscription|false
-     * @throws InvalidArgumentException*@throws \Throwable
+     * @throws InvalidArgumentException
      * @throws \Throwable
      */
     public function changePlan($plan)
     {
         if (!($plan instanceof Plan)) {
             // Try find by Plan ID
-            $plan = App::make(Config::get('plans.models.Plan'))->find($plan);
+            $plan = App::make(config('plans.models.Plan'))->find($plan);
 
             if (!$plan) {
                 // Try find by Plan Code
-                $plan = App::make(Config::get('plans.models.Plan'))->findByCode($plan);
+                $plan = App::make(config('plans.models.Plan'))->findByCode($plan);
             }
         }
 
@@ -319,7 +320,7 @@ class PlanSubscription extends Model
             throw new InvalidArgumentException('Invalid plan instance');
         }
 
-        if (Config::get('plans.save_history_usage', true)) {
+        if (config('plans.save_history_usage', true)) {
             $this->usageManager()->saveHistory();
         }
 
@@ -363,7 +364,7 @@ class PlanSubscription extends Model
 
         DB::transaction(function () use ($subscription) {
             // Clear usage data
-            if (Config::get('plans.save_history_usage', true)) {
+            if (config('plans.save_history_usage', true)) {
                 $this->usageManager()->saveHistory();
             }
             $this->usageManager()->clear();
@@ -375,7 +376,7 @@ class PlanSubscription extends Model
             $subscription->save();
         });
 
-        Event::dispatch(new SubscriptionRenewed($this));
+        SubscriptionRenewed::dispatch($this);
         Cache::forget(sprintf('plan_subscription_%s', $this->subscriber_id));
         return $this;
     }
@@ -383,7 +384,7 @@ class PlanSubscription extends Model
     /**
      * Get Subscription Ability instance.
      *
-     * @return \Laravel\PricingPlans\SubscriptionAbility
+     * @return \Dominservice\PricingPlans\SubscriptionAbility
      */
     public function ability()
     {
@@ -397,7 +398,7 @@ class PlanSubscription extends Model
     /**
      * Get Subscription Ability instance.
      *
-     * @return \Laravel\PricingPlans\SubscriptionUsageManager
+     * @return \Dominservice\PricingPlans\SubscriptionUsageManager
      */
     public function usageManager()
     {
@@ -412,7 +413,7 @@ class PlanSubscription extends Model
      * Find by user id.
      *
      * @param  \Illuminate\Database\Eloquent\Builder
-     * @param  \Laravel\PricingPlans\Contracts\Subscriber $subscriber
+     * @param  \Dominservice\PricingPlans\Contracts\Subscriber $subscriber
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeBySubscriber($query, $subscriber)

@@ -1,18 +1,20 @@
 <?php
 
-namespace Laravel\PricingPlans\Models;
+namespace Dominservice\PricingPlans\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Config;
-use Laravel\PricingPlans\Models\Concerns\HasCode;
-use Laravel\PricingPlans\Models\Concerns\Resettable;
+use Dominservice\PricingPlans\Models\Concerns\HasCode;
+use Dominservice\PricingPlans\Models\Concerns\Resettable;
 
 /**
  * Class Feature
- * @package Laravel\PricingPlans\Models
+ * @package Dominservice\PricingPlans\Models
  * @property int $id
  * @property string $name
+ * @property string $code
  * @property string $description
+ * @property string $interval_unit
+ * @property int $interval_count
  * @property int $sort_order
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
@@ -20,11 +22,6 @@ use Laravel\PricingPlans\Models\Concerns\Resettable;
 class Feature extends Model
 {
     use Resettable, HasCode;
-
-    /**
-     * @var string
-     */
-    protected $primaryKey = 'id';
 
     /**
      * The attributes that are mass assignable.
@@ -51,15 +48,13 @@ class Feature extends Model
     ];
 
     /**
-     * Plan constructor.
+     * Get the table associated with the model.
      *
-     * @param array $attributes
+     * @return string
      */
-    public function __construct(array $attributes = [])
+    public function getTable()
     {
-        parent::__construct($attributes);
-
-        $this->setTable(Config::get('plans.tables.features'));
+        return config('plans.tables.features');
     }
 
     /**
@@ -68,11 +63,11 @@ class Feature extends Model
     public function plans()
     {
         return $this->belongsToMany(
-            Config::get('plans.models.Plan'),
-            Config::get('plans.tables.plan_features'),
+            config('plans.models.Plan'),
+            config('plans.tables.plan_features'),
             'feature_id',
             'plan_id'
-        )->using(Config::get('plans.models.PlanFeature'))
+        )->using(config('plans.models.PlanFeature'))
         ->withTimestamps();
     }
 
@@ -86,7 +81,7 @@ class Feature extends Model
     public function usage()
     {
         return $this->hasMany(
-            Config::get('plans.models.PlanSubscriptionUsage'),
+            config('plans.models.PlanSubscriptionUsage'),
             'feature_code',
             'code'
         );

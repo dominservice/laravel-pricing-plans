@@ -1,24 +1,23 @@
 <?php
 
-namespace Laravel\PricingPlans;
+namespace Dominservice\PricingPlans;
 
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Config;
-use Laravel\PricingPlans\Models\PlanSubscription;
+use Dominservice\PricingPlans\Models\PlanSubscription;
 
 class SubscriptionAbility
 {
     /**
      * Subscription model instance.
      *
-     * @var \Laravel\PricingPlans\Models\PlanSubscription
+     * @var \Dominservice\PricingPlans\Models\PlanSubscription
      */
     protected $subscription;
 
     /**
      * Create a new Subscription instance.
      *
-     * @param \Laravel\PricingPlans\Models\PlanSubscription $subscription
+     * @param \Dominservice\PricingPlans\Models\PlanSubscription $subscription
      */
     public function __construct(PlanSubscription $subscription)
     {
@@ -66,7 +65,7 @@ class SubscriptionAbility
      */
     public function consumed(string $featureCode): int
     {
-        /** @var \Laravel\PricingPlans\Models\PlanSubscriptionUsage $usage */
+        /** @var \Dominservice\PricingPlans\Models\PlanSubscriptionUsage $usage */
         foreach ($this->subscription->usage as $usage) {
             if ($usage->feature_code === $featureCode) {
                 return (int) $usage->used;
@@ -108,7 +107,7 @@ class SubscriptionAbility
 
         // If value is one of the positive words configured then the
         // feature is enabled.
-        if (in_array(strtoupper($featureValue), Config::get('plans.positive_words'))) {
+        if (in_array(strtoupper($featureValue), config('plans.positive_words'))) {
             return true;
         }
 
@@ -136,7 +135,7 @@ class SubscriptionAbility
                     $this->subscription->plan->load('features');
                 }
 
-                /** @var \Laravel\PricingPlans\Models\Feature $feature */
+                /** @var \Dominservice\PricingPlans\Models\Feature $feature */
                 foreach ($this->subscription->plan->features as $feature) {
                     if ($featureCode === $feature->code) {
                         return $feature->pivot->value;

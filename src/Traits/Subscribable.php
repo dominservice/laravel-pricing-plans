@@ -1,11 +1,10 @@
 <?php
 
-namespace Laravel\PricingPlans\Models\Concerns;
+namespace Dominservice\PricingPlans\Models\Concerns;
 
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Config;
-use Laravel\PricingPlans\Models\Plan;
-use Laravel\PricingPlans\SubscriptionBuilder;
+use Dominservice\PricingPlans\Models\Plan;
+use Dominservice\PricingPlans\SubscriptionBuilder;
 
 trait Subscribable
 {
@@ -17,7 +16,7 @@ trait Subscribable
     public function subscriptions()
     {
         return $this->morphMany(
-            Config::get('plans.models.PlanSubscription'),
+            config('plans.models.PlanSubscription'),
             'subscriber'
         );
     }
@@ -26,7 +25,7 @@ trait Subscribable
      * Get a subscription by name.
      *
      * @param  string $name Subscription name
-     * @return \Laravel\PricingPlans\Models\PlanSubscription|null
+     * @return \Dominservice\PricingPlans\Models\PlanSubscription|null
      */
     public function subscription(string $name = 'main')
     {
@@ -67,7 +66,7 @@ trait Subscribable
         }
 
         if (is_null($planCode) || $planCode == $planSubscription->plan->code) {
-            return $subscription->isActive();
+            return $planSubscription->isActive();
         }
 
         return false;
@@ -77,8 +76,8 @@ trait Subscribable
      * Subscribe user to a new plan.
      *
      * @param string $subscription Subscription name
-     * @param \Laravel\PricingPlans\Models\Plan $plan
-     * @return \Laravel\PricingPlans\SubscriptionBuilder
+     * @param \Dominservice\PricingPlans\Models\Plan $plan
+     * @return \Dominservice\PricingPlans\SubscriptionBuilder
      */
     public function newSubscription(string $subscription, Plan $plan)
     {
@@ -89,7 +88,7 @@ trait Subscribable
      * Get subscription usage manager instance.
      *
      * @param  string $subscription Subscription name
-     * @return \Laravel\PricingPlans\SubscriptionUsageManager
+     * @return \Dominservice\PricingPlans\SubscriptionUsageManager
      */
     public function subscriptionUsage(string $subscription = 'main')
     {

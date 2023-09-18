@@ -1,8 +1,8 @@
 <?php
 
-namespace Laravel\PricingPlans\Contracts;
+namespace Dominservice\PricingPlans\Contracts;
 
-use Laravel\PricingPlans\Models\Plan;
+use Dominservice\PricingPlans\Models\Plan;
 
 interface Subscriber
 {
@@ -10,9 +10,9 @@ interface Subscriber
      * Get a subscription by name.
      *
      * @param  string $name Subscription name
-     * @return \Laravel\PricingPlans\Models\PlanSubscription|null
+     * @return \Dominservice\PricingPlans\Models\PlanSubscription|null
      */
-    public function subscription(string $name = 'default');
+    public function subscription(string $name = 'main');
 
     /**
      * Check if the user has a given subscription.
@@ -27,8 +27,8 @@ interface Subscriber
      * Subscribe user to a new plan.
      *
      * @param string $subscription Subscription name
-     * @param \Laravel\PricingPlans\Models\Plan $plan
-     * @return \Laravel\PricingPlans\SubscriptionBuilder
+     * @param \Dominservice\PricingPlans\Models\Plan $plan
+     * @return \Dominservice\PricingPlans\SubscriptionBuilder
      */
     public function newSubscription(string $subscription, Plan $plan);
 
@@ -36,7 +36,7 @@ interface Subscriber
      * Get subscription usage manager instance.
      *
      * @param string $subscription Subscription name
-     * @return \Laravel\PricingPlans\SubscriptionUsageManager
+     * @return \Dominservice\PricingPlans\SubscriptionUsageManager
      */
     public function subscriptionUsage(string $subscription);
 }

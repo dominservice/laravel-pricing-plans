@@ -1,19 +1,21 @@
 <?php
 
-namespace Laravel\PricingPlans\Models;
+namespace Dominservice\PricingPlans\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Config;
 
 /**
- * Class PlanSubscriptionUsage
- * @package Laravel\PricingPlans\Models
+ * Class PlanSubscriptionHistory
+ * @package Dominservice\PricingPlans\Models
  * @property int $id
  * @property int $subscription_id
+ * @property int $plan_id
  * @property string $feature_code
  * @property int $used
- * @property \Carbon\Carbon $valid_until
+ * @property int $hired
+ * @property \Carbon\Carbon $starts_at
+ * @property \Carbon\Carbon $ends_at
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  */
@@ -25,12 +27,13 @@ class PlanSubscriptionHistory extends Model
      * @var array
      */
     protected $fillable = [
-        'starts_at',
-        'ends_at',
+        'subscription_id',
+        'plan_id',
+        'feature_code',
         'used',
         'hired',
-        'feature_code',
-        'plan_id'
+        'starts_at',
+        'ends_at',
     ];
 
     /**
@@ -46,15 +49,13 @@ class PlanSubscriptionHistory extends Model
     ];
 
     /**
-     * Plan constructor.
+     * Get the table associated with the model.
      *
-     * @param array $attributes
+     * @return string
      */
-    public function __construct(array $attributes = [])
+    public function getTable()
     {
-        parent::__construct($attributes);
-
-        $this->setTable(Config::get('plans.tables.plan_subscription_history'));
+        return config('plans.tables.plan_subscription_history');
     }
 
     /**
@@ -65,7 +66,7 @@ class PlanSubscriptionHistory extends Model
     public function feature()
     {
         return $this->belongsTo(
-            Config::get('plans.models.Feature'),
+            config('plans.models.Feature'),
             'feature_code',
             'code'
         );
@@ -79,7 +80,7 @@ class PlanSubscriptionHistory extends Model
     public function subscription()
     {
         return $this->belongsTo(
-            Config::get('plans.models.PlanSubscription'),
+            config('plans.models.PlanSubscription'),
             'subscription_id',
             'id'
         );
@@ -93,7 +94,7 @@ class PlanSubscriptionHistory extends Model
     public function plan()
     {
         return $this->belongsTo(
-            Config::get('plans.models.Plan'),
+            config('plans.models.Plan'),
             'plan_id',
             'id'
         );
@@ -103,7 +104,7 @@ class PlanSubscriptionHistory extends Model
      * Scope by feature code.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string|\Laravel\PricingPlans\Models\Feature $feature
+     * @param string|\Dominservice\PricingPlans\Models\Feature $feature
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeByFeature($query, $feature)
@@ -115,7 +116,7 @@ class PlanSubscriptionHistory extends Model
      * Scope by feature code.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string|\Laravel\PricingPlans\Models\Feature $planSubscription
+     * @param string|\Dominservice\PricingPlans\Models\Feature $planSubscription
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeBySubscription($query, $planSubscription)

@@ -1,8 +1,7 @@
 <?php
 
-namespace Laravel\PricingPlans\Models\Concerns;
+namespace Dominservice\PricingPlans\Models\Concerns;
 
-use Illuminate\Support\Facades\Config;
 
 trait BelongsToPlanModel
 {
@@ -14,7 +13,7 @@ trait BelongsToPlanModel
     public function plan()
     {
         return $this->belongsTo(
-            Config::get('plans.models.Plan'),
+            config('plans.models.Plan'),
             'plan_id',
             'id'
         );

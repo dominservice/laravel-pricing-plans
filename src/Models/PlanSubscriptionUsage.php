@@ -1,14 +1,13 @@
 <?php
 
-namespace Laravel\PricingPlans\Models;
+namespace Dominservice\PricingPlans\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Config;
 
 /**
  * Class PlanSubscriptionUsage
- * @package Laravel\PricingPlans\Models
+ * @package Dominservice\PricingPlans\Models
  * @property int $id
  * @property int $subscription_id
  * @property string $feature_code
@@ -25,9 +24,10 @@ class PlanSubscriptionUsage extends Model
      * @var array
      */
     protected $fillable = [
-        'valid_until',
-        'used',
+        'subscription_id',
         'feature_code',
+        'used',
+        'valid_until',
     ];
 
     /**
@@ -42,15 +42,13 @@ class PlanSubscriptionUsage extends Model
     ];
 
     /**
-     * Plan constructor.
+     * Get the table associated with the model.
      *
-     * @param array $attributes
+     * @return string
      */
-    public function __construct(array $attributes = [])
+    public function getTable()
     {
-        parent::__construct($attributes);
-
-        $this->setTable(Config::get('plans.tables.plan_subscription_usages'));
+        return config('plans.tables.plan_subscription_usages');
     }
 
     /**
@@ -61,7 +59,7 @@ class PlanSubscriptionUsage extends Model
     public function feature()
     {
         return $this->belongsTo(
-            Config::get('plans.models.Feature'),
+            config('plans.models.Feature'),
             'feature_code',
             'code'
         );
@@ -75,7 +73,7 @@ class PlanSubscriptionUsage extends Model
     public function subscription()
     {
         return $this->belongsTo(
-            Config::get('plans.models.PlanSubscription'),
+            config('plans.models.PlanSubscription'),
             'subscription_id',
             'id'
         );
@@ -85,7 +83,7 @@ class PlanSubscriptionUsage extends Model
      * Scope by feature code.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string|\Laravel\PricingPlans\Models\Feature $feature
+     * @param string|\Dominservice\PricingPlans\Models\Feature $feature
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeByFeature($query, $feature)
